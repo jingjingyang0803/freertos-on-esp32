@@ -84,7 +84,7 @@ void setup()
   xTaskCreatePinnedToCore(
     LedTask,
     "LED Task",
-    1024,
+    4096,
     NULL,
     1,
     NULL,
@@ -97,7 +97,7 @@ void setup()
   xTaskCreatePinnedToCore(
     PrintTask,
     "Print Task",
-    2048,
+    4096,
     NULL,
     1,
     NULL,
