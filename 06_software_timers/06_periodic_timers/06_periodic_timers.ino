@@ -17,9 +17,6 @@
  * - MonitorTask sees the flag and prints a heartbeat message.
  */
 
-#include <Arduino.h>
-#include "freertos/timers.h"
-
 #if CONFIG_FREERTOS_UNICORE
 static const BaseType_t app_cpu = 0;
 #else
