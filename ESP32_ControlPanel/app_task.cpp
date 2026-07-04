@@ -11,10 +11,10 @@ static void app_task(void *pvParameters) {
 
   while (1) {
     if (xQueueReceive(g_button_queue, &event, portMAX_DELAY) == pdTRUE) {
-      if (event.type == BUTTON_EVENT_PRESSED) {
-        logger_log("AppTask received: BUTTON_EVENT_PRESSED");
-      } else if (event.type == BUTTON_EVENT_RELEASED) {
-        logger_log("AppTask received: BUTTON_EVENT_RELEASED");
+      if (event.type == BUTTON_EVENT_LONG_PRESS) {
+        logger_log("AppTask received: BUTTON_EVENT_LONG_PRESS");
+      } else if (event.type == BUTTON_EVENT_SHORT_PRESS) {
+        logger_log("AppTask received: BUTTON_EVENT_SHORT_PRESS");
       }
     }
   }

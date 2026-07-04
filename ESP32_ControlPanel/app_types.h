@@ -1,6 +1,6 @@
 #pragma once
 
-enum ButtonEventType { BUTTON_EVENT_PRESSED, BUTTON_EVENT_RELEASED };
+enum ButtonEventType { BUTTON_EVENT_SHORT_PRESS, BUTTON_EVENT_LONG_PRESS };
 
 struct ButtonEvent {
   ButtonEventType type;

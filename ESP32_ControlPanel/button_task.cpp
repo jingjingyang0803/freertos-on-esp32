@@ -16,6 +16,7 @@ static void button_task(void *pvParameters) {
   bool last_stable_state = HIGH;
   bool last_raw_state = HIGH;
   uint32_t last_debounce_time = 0;
+  uint32_t press_start_time = 0;
 
   while (1) {
     bool raw_state = digitalRead(BUTTON_PIN);
@@ -34,14 +35,26 @@ static void button_task(void *pvParameters) {
       if (raw_state != last_stable_state) {
         last_stable_state = raw_state;
 
-        // Send the button event to the queue.
         ButtonEvent event;
+        bool send_event = false;
+
         if (last_stable_state == LOW) {
-          event.type = BUTTON_EVENT_PRESSED;
+          press_start_time = now;
         } else {
-          event.type = BUTTON_EVENT_RELEASED;
+          uint32_t press_duration = now - press_start_time;
+
+          if (press_duration >= BUTTON_LONG_PRESS_MS) {
+            event.type = BUTTON_EVENT_LONG_PRESS;
+          } else {
+            event.type = BUTTON_EVENT_SHORT_PRESS;
+          }
+
+          send_event = true;
         }
-        xQueueSend(g_button_queue, &event, 0);
+
+        if (send_event) {
+          xQueueSend(g_button_queue, &event, 0);
+        }
       }
     }
 
