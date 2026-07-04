@@ -8,7 +8,7 @@
 #define LOGGER_TASK_PRIORITY 1
 #define LOGGER_QUEUE_LENGTH 16
 
-// UI task configuration
+// Core configuration
 #define CORE_UI 1
 
 // Button task configuration
@@ -27,3 +27,8 @@
 // App task configuration
 #define APP_TASK_STACK_SIZE 4096
 #define APP_TASK_PRIORITY 2
+
+// Display task configuration
+#define DISPLAY_TASK_STACK_SIZE 4096
+#define DISPLAY_TASK_PRIORITY 1
+#define DISPLAY_QUEUE_LENGTH 8

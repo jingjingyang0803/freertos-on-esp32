@@ -3,6 +3,7 @@
 #include "app_config.h"
 #include "app_task.h"
 #include "button_task.h"
+#include "display_task.h"
 #include "logger_task.h"
 
 void setup() {
@@ -12,6 +13,7 @@ void setup() {
   logger_task_start();
   button_task_start();
   app_task_start();
+  display_task_start();
 
   logger_log("System booting...");
 }
