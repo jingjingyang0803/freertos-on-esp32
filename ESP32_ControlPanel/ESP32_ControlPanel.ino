@@ -1,22 +1,19 @@
 #include <Arduino.h>
 
-#define LED_PIN LED_BUILTIN
+#include "app_config.h"
+#include "logger_task.h"
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(SERIAL_BAUD_RATE);
   delay(500);
 
-  pinMode(LED_PIN, OUTPUT);
+  logger_task_start();
 
-  Serial.println("ESP32 smoke test started");
+  logger_log("System booting...");
+  logger_log("LoggerTask is working.");
 }
 
 void loop() {
-  digitalWrite(LED_PIN, HIGH);
-  Serial.println("LED ON");
-  delay(500);
-
-  digitalWrite(LED_PIN, LOW);
-  Serial.println("LED OFF");
-  delay(500);
+  logger_log("Hello from loop");
+  vTaskDelay(pdMS_TO_TICKS(1000));
 }

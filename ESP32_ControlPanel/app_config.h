@@ -1,0 +1,9 @@
+#pragma once
+
+#define SERIAL_BAUD_RATE 115200
+
+#define LOGGER_TASK_STACK_SIZE 4096
+#define LOGGER_TASK_PRIORITY 1
+#define LOGGER_QUEUE_LENGTH 16
+
+#define CORE_UI 1
