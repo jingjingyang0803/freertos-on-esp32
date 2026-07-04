@@ -1,6 +1,7 @@
 #include <Arduino.h>
 
 #include "app_config.h"
+#include "demo_task.h"
 #include "logger_task.h"
 
 void setup() {
@@ -8,6 +9,7 @@ void setup() {
   delay(500);
 
   logger_task_start();
+  demo_task_start();
 
   logger_log("System booting...");
   logger_log("LoggerTask is working.");
