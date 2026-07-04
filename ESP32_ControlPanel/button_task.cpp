@@ -10,22 +10,39 @@ QueueHandle_t g_button_queue = NULL;
 static void button_task(void *pvParameters) {
   pinMode(BUTTON_PIN, INPUT_PULLUP);
 
-  bool last_state = HIGH;
+  // INPUT_PULLUP:
+  // HIGH = not pressed
+  // LOW  = pressed
+  bool last_stable_state = HIGH;
+  bool last_raw_state = HIGH;
+  uint32_t last_debounce_time = 0;
 
   while (1) {
-    bool current_state = digitalRead(BUTTON_PIN);
+    bool raw_state = digitalRead(BUTTON_PIN);
+    uint32_t now = millis();
 
-    // INPUT_PULLUP:
-    // HIGH = not pressed
-    // LOW  = pressed
-    if (last_state == HIGH && current_state == LOW) {
-      ButtonEvent event;
-      event.type = BUTTON_EVENT_PRESSED;
-
-      xQueueSend(g_button_queue, &event, 0);
+    // Detect any change and restart the debounce timer.
+    if (raw_state != last_raw_state) {
+      last_debounce_time = now;
+      last_raw_state = raw_state;
     }
 
-    last_state = current_state;
+    // Accept the new state only after it has been stable long enough.
+    if ((now - last_debounce_time) > BUTTON_DEBOUNCE_MS) {
+
+      // Has the stable state actually changed?
+      if (raw_state != last_stable_state) {
+        last_stable_state = raw_state;
+
+        // Generate an event only when the button is pressed.
+        if (last_stable_state == LOW) {
+          ButtonEvent event;
+          event.type = BUTTON_EVENT_PRESSED;
+
+          xQueueSend(g_button_queue, &event, 0);
+        }
+      }
+    }
 
     vTaskDelay(pdMS_TO_TICKS(BUTTON_SCAN_MS));
   }
