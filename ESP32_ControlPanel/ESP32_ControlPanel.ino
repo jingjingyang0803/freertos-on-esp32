@@ -1,6 +1,7 @@
 #include <Arduino.h>
 
 #include "app_config.h"
+#include "app_task.h"
 #include "button_task.h"
 #include "logger_task.h"
 
@@ -10,10 +11,9 @@ void setup() {
 
   logger_task_start();
   button_task_start();
+  app_task_start();
 
   logger_log("System booting...");
 }
 
-void loop() {
-  vTaskDelay(pdMS_TO_TICKS(1000));
-}
+void loop() { vTaskDelay(pdMS_TO_TICKS(1000)); }
