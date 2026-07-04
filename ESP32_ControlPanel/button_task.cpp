@@ -34,13 +34,14 @@ static void button_task(void *pvParameters) {
       if (raw_state != last_stable_state) {
         last_stable_state = raw_state;
 
-        // Generate an event only when the button is pressed.
+        // Send the button event to the queue.
+        ButtonEvent event;
         if (last_stable_state == LOW) {
-          ButtonEvent event;
           event.type = BUTTON_EVENT_PRESSED;
-
-          xQueueSend(g_button_queue, &event, 0);
+        } else {
+          event.type = BUTTON_EVENT_RELEASED;
         }
+        xQueueSend(g_button_queue, &event, 0);
       }
     }
 

@@ -13,6 +13,8 @@ static void app_task(void *pvParameters) {
     if (xQueueReceive(g_button_queue, &event, portMAX_DELAY) == pdTRUE) {
       if (event.type == BUTTON_EVENT_PRESSED) {
         logger_log("AppTask received: BUTTON_EVENT_PRESSED");
+      } else if (event.type == BUTTON_EVENT_RELEASED) {
+        logger_log("AppTask received: BUTTON_EVENT_RELEASED");
       }
     }
   }
