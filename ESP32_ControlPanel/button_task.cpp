@@ -8,15 +8,23 @@
 QueueHandle_t g_button_queue = NULL;
 
 static void button_task(void *pvParameters) {
-  pinMode(BUTTON_PIN, INPUT_PULLUP);
-
   // INPUT_PULLUP:
   // HIGH = not pressed
   // LOW  = pressed
-  bool last_stable_state = HIGH;
-  bool last_raw_state = HIGH;
-  uint32_t last_debounce_time = 0;
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+
+  // Debounce state.
+  bool last_stable_state = HIGH;   // Last accepted button state.
+  bool last_raw_state = HIGH;      // Last sampled GPIO state.
+  uint32_t last_debounce_time = 0; // Time of the last raw state change.
+
+  // Press timing state.
   uint32_t press_start_time = 0;
+
+  // Double-click state.
+  // A short press is delayed briefly to see if a second click follows.
+  bool waiting_for_second_click = false;
+  uint32_t first_click_time = 0;
 
   while (1) {
     bool raw_state = digitalRead(BUTTON_PIN);
@@ -39,23 +47,46 @@ static void button_task(void *pvParameters) {
         bool send_event = false;
 
         if (last_stable_state == LOW) {
+          // Button pressed: remember when the press started.
           press_start_time = now;
         } else {
+          // Button released: classify the completed press.
           uint32_t press_duration = now - press_start_time;
 
           if (press_duration >= BUTTON_LONG_PRESS_MS) {
+            // Long press is sent immediately.
             event.type = BUTTON_EVENT_LONG_PRESS;
+            send_event = true;
+            waiting_for_second_click = false;
           } else {
-            event.type = BUTTON_EVENT_SHORT_PRESS;
+            // Short press: wait briefly to see if it becomes a double click.
+            if (waiting_for_second_click &&
+                (now - first_click_time <= BUTTON_DOUBLE_CLICK_MS)) {
+              event.type = BUTTON_EVENT_DOUBLE_CLICK;
+              send_event = true;
+              waiting_for_second_click = false;
+            } else {
+              // First short click detected. Do not send SHORT_PRESS yet.
+              waiting_for_second_click = true;
+              first_click_time = now;
+            }
           }
-
-          send_event = true;
         }
 
         if (send_event) {
           xQueueSend(g_button_queue, &event, 0);
         }
       }
+    }
+
+    // If no second click arrives in time, confirm it as a single short press.
+    if (waiting_for_second_click &&
+        (now - first_click_time > BUTTON_DOUBLE_CLICK_MS)) {
+      ButtonEvent event;
+      event.type = BUTTON_EVENT_SHORT_PRESS;
+
+      xQueueSend(g_button_queue, &event, 0);
+      waiting_for_second_click = false;
     }
 
     vTaskDelay(pdMS_TO_TICKS(BUTTON_SCAN_MS));

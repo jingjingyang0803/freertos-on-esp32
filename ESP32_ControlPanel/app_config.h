@@ -22,6 +22,7 @@
 
 #define BUTTON_DEBOUNCE_MS 50
 #define BUTTON_LONG_PRESS_MS 800
+#define BUTTON_DOUBLE_CLICK_MS 300
 
 // App task configuration
 #define APP_TASK_STACK_SIZE 4096

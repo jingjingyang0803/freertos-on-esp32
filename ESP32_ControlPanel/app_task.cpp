@@ -15,6 +15,8 @@ static void app_task(void *pvParameters) {
         logger_log("AppTask received: BUTTON_EVENT_LONG_PRESS");
       } else if (event.type == BUTTON_EVENT_SHORT_PRESS) {
         logger_log("AppTask received: BUTTON_EVENT_SHORT_PRESS");
+      } else if (event.type == BUTTON_EVENT_DOUBLE_CLICK) {
+        logger_log("AppTask received: BUTTON_EVENT_DOUBLE_CLICK");
       }
     }
   }
