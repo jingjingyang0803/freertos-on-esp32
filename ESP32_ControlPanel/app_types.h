@@ -9,3 +9,11 @@ enum ButtonEventType {
 struct ButtonEvent {
   ButtonEventType type;
 };
+
+enum DisplayPage {
+  PAGE_HOME = 0,
+  PAGE_HARDWARE,
+  PAGE_APPS,
+  PAGE_RTOS,
+  PAGE_COUNT
+};

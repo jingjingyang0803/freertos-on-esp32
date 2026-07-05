@@ -6,6 +6,7 @@
 #include "app_config.h"
 #include "display_task.h"
 #include "logger_task.h"
+#include "ui_pages.h"
 
 struct DisplayCommand {
   uint8_t page;
@@ -15,30 +16,6 @@ static QueueHandle_t display_queue = NULL;
 
 static Adafruit_ST7789 tft =
     Adafruit_ST7789(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
-
-static void draw_page(uint8_t page) {
-  tft.fillScreen(ST77XX_BLACK);
-
-  tft.setTextColor(ST77XX_WHITE);
-  tft.setTextSize(2);
-  tft.setCursor(10, 10);
-  tft.println("ESP32 Panel");
-
-  tft.setTextSize(1);
-  tft.setCursor(10, 45);
-
-  if (page == 0) {
-    tft.println("Page 0: Home");
-    tft.setCursor(10, 65);
-    tft.println("Status: OK");
-  } else if (page == 1) {
-    tft.println("Page 1: Sensors");
-    tft.setCursor(10, 65);
-    tft.println("Temp: --.- C");
-  } else {
-    tft.println("Unknown page");
-  }
-}
 
 static void display_task(void *pvParameters) {
   DisplayCommand cmd;
@@ -51,7 +28,7 @@ static void display_task(void *pvParameters) {
 
   while (1) {
     if (xQueueReceive(display_queue, &cmd, portMAX_DELAY) == pdTRUE) {
-      draw_page(cmd.page);
+      ui_draw_page(tft, (DisplayPage)cmd.page);
     }
   }
 }
