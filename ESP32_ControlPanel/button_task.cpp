@@ -5,7 +5,7 @@
 #include "button_task.h"
 #include "logger_task.h"
 
-QueueHandle_t g_button_queue = NULL;
+static QueueHandle_t button_queue;
 
 static void button_task(void *pvParameters) {
   // INPUT_PULLUP:
@@ -74,7 +74,7 @@ static void button_task(void *pvParameters) {
         }
 
         if (send_event) {
-          xQueueSend(g_button_queue, &event, 0);
+          xQueueSend(button_queue, &event, 0);
         }
       }
     }
@@ -85,7 +85,7 @@ static void button_task(void *pvParameters) {
       InputEvent event;
       event.type = INPUT_EVENT_BUTTON_SHORT;
 
-      xQueueSend(g_button_queue, &event, 0);
+      xQueueSend(button_queue, &event, 0);
       waiting_for_second_click = false;
     }
 
@@ -93,10 +93,12 @@ static void button_task(void *pvParameters) {
   }
 }
 
-void button_task_start() {
-  g_button_queue = xQueueCreate(BUTTON_QUEUE_LENGTH, sizeof(InputEvent));
+QueueHandle_t button_get_queue() { return button_queue; }
 
-  if (g_button_queue == NULL) {
+void button_task_start() {
+  button_queue = xQueueCreate(BUTTON_QUEUE_LENGTH, sizeof(InputEvent));
+
+  if (button_queue == NULL) {
     logger_log("ERROR: Failed to create button queue");
     return;
   }

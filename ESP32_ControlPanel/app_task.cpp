@@ -24,7 +24,8 @@ static void app_task(void *pvParameters) {
       }
     }
 
-    if (xQueueReceive(g_button_queue, &event, pdMS_TO_TICKS(10)) == pdTRUE) {
+    if (xQueueReceive(button_get_queue(), &event, pdMS_TO_TICKS(10)) ==
+        pdTRUE) {
       if (event.type == INPUT_EVENT_BUTTON_LONG) {
         current_page = PAGE_HOME;
         display_show_page(current_page);
