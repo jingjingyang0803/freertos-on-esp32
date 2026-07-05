@@ -32,3 +32,10 @@
 #define DISPLAY_TASK_STACK_SIZE 4096
 #define DISPLAY_TASK_PRIORITY 1
 #define DISPLAY_QUEUE_LENGTH 8
+
+// TFT screen configuration
+#define TFT_CS 46
+#define TFT_DC 9
+#define TFT_RST 10
+#define TFT_MOSI 11
+#define TFT_SCLK 12
