@@ -43,7 +43,7 @@ static void button_task(void *pvParameters) {
       if (raw_state != last_stable_state) {
         last_stable_state = raw_state;
 
-        ButtonEvent event;
+        InputEvent event;
         bool send_event = false;
 
         if (last_stable_state == LOW) {
@@ -55,14 +55,14 @@ static void button_task(void *pvParameters) {
 
           if (press_duration >= BUTTON_LONG_PRESS_MS) {
             // Long press is sent immediately.
-            event.type = BUTTON_EVENT_LONG_PRESS;
+            event.type = INPUT_EVENT_BUTTON_LONG;
             send_event = true;
             waiting_for_second_click = false;
           } else {
             // Short press: wait briefly to see if it becomes a double click.
             if (waiting_for_second_click &&
                 (now - first_click_time <= BUTTON_DOUBLE_CLICK_MS)) {
-              event.type = BUTTON_EVENT_DOUBLE_CLICK;
+              event.type = INPUT_EVENT_BUTTON_DOUBLE;
               send_event = true;
               waiting_for_second_click = false;
             } else {
@@ -82,8 +82,8 @@ static void button_task(void *pvParameters) {
     // If no second click arrives in time, confirm it as a single short press.
     if (waiting_for_second_click &&
         (now - first_click_time > BUTTON_DOUBLE_CLICK_MS)) {
-      ButtonEvent event;
-      event.type = BUTTON_EVENT_SHORT_PRESS;
+      InputEvent event;
+      event.type = INPUT_EVENT_BUTTON_SHORT;
 
       xQueueSend(g_button_queue, &event, 0);
       waiting_for_second_click = false;
@@ -94,7 +94,7 @@ static void button_task(void *pvParameters) {
 }
 
 void button_task_start() {
-  g_button_queue = xQueueCreate(BUTTON_QUEUE_LENGTH, sizeof(ButtonEvent));
+  g_button_queue = xQueueCreate(BUTTON_QUEUE_LENGTH, sizeof(InputEvent));
 
   if (g_button_queue == NULL) {
     logger_log("ERROR: Failed to create button queue");

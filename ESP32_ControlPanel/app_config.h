@@ -39,3 +39,7 @@
 #define TFT_RST 10
 #define TFT_MOSI 11
 #define TFT_SCLK 12
+
+// Encoder configuration
+#define ENCODER_PIN_A 35
+#define ENCODER_PIN_B 36

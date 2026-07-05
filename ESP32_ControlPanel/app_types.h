@@ -1,13 +1,15 @@
 #pragma once
 
-enum ButtonEventType {
-  BUTTON_EVENT_SHORT_PRESS,
-  BUTTON_EVENT_LONG_PRESS,
-  BUTTON_EVENT_DOUBLE_CLICK
+enum InputEventType {
+  INPUT_EVENT_BUTTON_SHORT,
+  INPUT_EVENT_BUTTON_LONG,
+  INPUT_EVENT_BUTTON_DOUBLE,
+  INPUT_EVENT_ENCODER_CW,
+  INPUT_EVENT_ENCODER_CCW,
 };
 
-struct ButtonEvent {
-  ButtonEventType type;
+struct InputEvent {
+  InputEventType type;
 };
 
 enum DisplayPage {

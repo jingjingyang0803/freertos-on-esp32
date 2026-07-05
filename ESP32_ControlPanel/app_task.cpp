@@ -5,25 +5,37 @@
 #include "app_types.h"
 #include "button_task.h"
 #include "display_task.h"
+#include "encoder_task.h"
 #include "logger_task.h"
 
 static void app_task(void *pvParameters) {
-  ButtonEvent event;
+  InputEvent event;
   uint8_t current_page = PAGE_HOME;
 
+  display_show_page(current_page);
+
   while (1) {
-    if (xQueueReceive(g_button_queue, &event, portMAX_DELAY) == pdTRUE) {
-      if (event.type == BUTTON_EVENT_LONG_PRESS) {
+    if (xQueueReceive(encoder_get_queue(), &event, pdMS_TO_TICKS(10)) ==
+        pdTRUE) {
+      if (event.type == INPUT_EVENT_ENCODER_CW) {
+        logger_log("Encoder: CW");
+      } else if (event.type == INPUT_EVENT_ENCODER_CCW) {
+        logger_log("Encoder: CCW");
+      }
+    }
+
+    if (xQueueReceive(g_button_queue, &event, pdMS_TO_TICKS(10)) == pdTRUE) {
+      if (event.type == INPUT_EVENT_BUTTON_LONG) {
         current_page = PAGE_HOME;
         display_show_page(current_page);
-      } else if (event.type == BUTTON_EVENT_SHORT_PRESS) {
+      } else if (event.type == INPUT_EVENT_BUTTON_SHORT) {
         current_page++;
         if (current_page >= PAGE_COUNT) {
           current_page = PAGE_HOME;
         }
         display_show_page(current_page);
-      } else if (event.type == BUTTON_EVENT_DOUBLE_CLICK) {
-        display_show_page(current_page); // Refresh current page
+      } else if (event.type == INPUT_EVENT_BUTTON_DOUBLE) {
+        display_show_page(current_page);
       }
     }
   }

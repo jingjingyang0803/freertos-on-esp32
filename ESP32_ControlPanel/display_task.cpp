@@ -4,6 +4,7 @@
 #include <SPI.h>
 
 #include "app_config.h"
+#include "app_types.h"
 #include "display_task.h"
 #include "logger_task.h"
 #include "ui_pages.h"
