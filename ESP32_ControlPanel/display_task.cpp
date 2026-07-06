@@ -11,6 +11,7 @@
 
 struct DisplayCommand {
   uint8_t page;
+  uint8_t selected_index;
 };
 
 static QueueHandle_t display_queue = NULL;
@@ -29,9 +30,19 @@ static void display_task(void *pvParameters) {
 
   while (1) {
     if (xQueueReceive(display_queue, &cmd, portMAX_DELAY) == pdTRUE) {
-      ui_draw_page(tft, (DisplayPage)cmd.page);
+      ui_draw_page(tft, (DisplayPage)cmd.page, cmd.selected_index);
     }
   }
+}
+
+DisplayPage display_show_next_page(DisplayPage page) {
+  uint8_t next = static_cast<uint8_t>(page) + 1;
+
+  if (next >= PAGE_COUNT) {
+    return PAGE_HOME;
+  }
+
+  return static_cast<DisplayPage>(next);
 }
 
 void display_task_start() {
@@ -50,13 +61,14 @@ void display_task_start() {
   display_show_page(0);
 }
 
-void display_show_page(uint8_t page) {
+void display_show_page(uint8_t page, uint8_t selected_index) {
   if (display_queue == NULL) {
     return;
   }
 
   DisplayCommand cmd;
   cmd.page = page;
+  cmd.selected_index = selected_index;
 
   xQueueSend(display_queue, &cmd, pdMS_TO_TICKS(10));
 }

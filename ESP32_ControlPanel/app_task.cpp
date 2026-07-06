@@ -7,20 +7,37 @@
 #include "display_task.h"
 #include "encoder_task.h"
 #include "logger_task.h"
+#include "ui_pages.h"
 
 static void app_task(void *pvParameters) {
   InputEvent event;
-  uint8_t current_page = PAGE_HOME;
+  DisplayPage current_page = PAGE_HOME;
+  uint8_t selected_index = 0;
 
   display_show_page(current_page);
 
   while (1) {
     if (xQueueReceive(encoder_get_queue(), &event, pdMS_TO_TICKS(10)) ==
         pdTRUE) {
+      uint8_t item_count = ui_page_get_item_count(current_page);
+
       if (event.type == INPUT_EVENT_ENCODER_CW) {
-        logger_log("Encoder: CW");
+        selected_index++;
+
+        if (selected_index >= item_count) {
+          selected_index = 0;
+        }
+
+        display_show_page(current_page, selected_index);
       } else if (event.type == INPUT_EVENT_ENCODER_CCW) {
-        logger_log("Encoder: CCW");
+
+        if (selected_index == 0) {
+          selected_index = item_count - 1;
+        } else {
+          selected_index--;
+        }
+
+        display_show_page(current_page, selected_index);
       }
     }
 
@@ -28,15 +45,14 @@ static void app_task(void *pvParameters) {
         pdTRUE) {
       if (event.type == INPUT_EVENT_BUTTON_LONG) {
         current_page = PAGE_HOME;
-        display_show_page(current_page);
+        selected_index = 0;
+        display_show_page(current_page, selected_index);
       } else if (event.type == INPUT_EVENT_BUTTON_SHORT) {
-        current_page++;
-        if (current_page >= PAGE_COUNT) {
-          current_page = PAGE_HOME;
-        }
-        display_show_page(current_page);
+        current_page = display_show_next_page(current_page);
+        selected_index = 0;
+        display_show_page(current_page, selected_index);
       } else if (event.type == INPUT_EVENT_BUTTON_DOUBLE) {
-        display_show_page(current_page);
+        display_show_page(current_page, selected_index);
       }
     }
   }

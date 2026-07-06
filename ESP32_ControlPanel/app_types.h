@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 enum InputEventType {
   INPUT_EVENT_BUTTON_SHORT,
   INPUT_EVENT_BUTTON_LONG,
@@ -18,4 +20,11 @@ enum DisplayPage {
   PAGE_APPS,
   PAGE_RTOS,
   PAGE_COUNT
+};
+
+struct PageDef {
+  DisplayPage page;
+  const char *title;
+  const char *items[4];
+  uint8_t item_count;
 };
