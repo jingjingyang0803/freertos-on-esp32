@@ -14,6 +14,11 @@ Hands-on experiments and examples exploring FreeRTOS concepts on ESP32 using the
 8. Deadlock and Starvation
 9. Priority Inversion
 10. Multicore Systems
+11. Event Groups
+12. Task Notifications
+13. Queue Sets
+14. Static Memory and Stack Monitoring
+15. ESP32 Low-Power Modes
 
 ## Development Environment
 
